@@ -1,4 +1,3 @@
-```markdown
 # Phase 1: VS Code and WSL Integration
 
 ## Objective
