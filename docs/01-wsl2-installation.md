@@ -30,4 +30,4 @@ sudo apt update && sudo apt upgrade -y
 Open a new PowerShell window and confirm the installation:
 wsl -l -v
 
-**Expected Output: You should see Ubuntu-24.04 listed
+**Expected Output: You should see Ubuntu-24.04 listed with State Running and Version 2**
