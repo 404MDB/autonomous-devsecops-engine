@@ -33,7 +33,7 @@ sudo apt update && sudo apt upgrade -y
 
 **5. Verification**
 Open a new PowerShell window and confirm the installation:
-```bash
+```powershell
 wsl -l -v
 ```
 
