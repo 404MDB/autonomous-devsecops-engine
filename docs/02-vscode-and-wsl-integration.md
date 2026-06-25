@@ -19,3 +19,16 @@ Open your Ubuntu terminal and create the DevSecOps project folder:
 ```bash
 mkdir -p ~/projects/Autonomous-DevSecOps-Engine/autonomous-devsecops-engine
 cd ~/projects/Autonomous-DevSecOps-Engine/autonomous-devsecops-engine
+```
+
+**4. Launch VS Code in WSL Context**
+From inside the Ubuntu terminal, open the current directory in VS Code:
+```bash
+code .
+```
+
+**5. Verification**
+
+Look at the bottom-left corner of the VS Code window. It should display a blue badge reading "WSL: Ubuntu-24.04".
+
+Open the integrated terminal (Ctrl+ ` ). It should automatically open a Linux bash shell, not Windows PowerShell.
