@@ -1,5 +1,7 @@
 # autonomous-devsecops-engine
 
+# Autonomous DevSecOps Engine
+
 ## Project Overview
 
 An AI-Driven DevSecOps pipeline integrating Secure Software Development Life Cycle (SSDLC), CI/CD automation, container security, and autonomous cloud mitigation.
@@ -48,6 +50,7 @@ To build an end-to-end automated DevSecOps platform capable of:
 
 ## Repository Structure
 
+```text
 autonomous-devsecops-engine/
 ├── Jenkinsfile
 ├── README.md
@@ -55,3 +58,5 @@ autonomous-devsecops-engine/
 ├── docker/
 ├── reports/
 └── screenshots/
+```
+
