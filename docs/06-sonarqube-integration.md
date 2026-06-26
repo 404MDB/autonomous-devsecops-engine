@@ -32,14 +32,6 @@ docker run -d --name sonarqube \
 
 **Step 3: API Token Generation**
 To allow Jenkins to securely transmit reports to SonarQube without exposing administrator credentials:
--Logged into SonarQube at http://localhost:9000 (Default: admin/admin).
-
--Navigated to Administration -> Security -> Users.
-
--Generated a non-expiring User Token named jenkins-sast-token.
-
-**Step 3: API Token Generation**
-To allow Jenkins to securely transmit reports to SonarQube without exposing administrator credentials:
 
 Logged into SonarQube at http://localhost:9000 (Default: admin/admin).
 
