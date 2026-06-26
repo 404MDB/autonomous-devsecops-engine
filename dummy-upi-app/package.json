@@ -7,6 +7,6 @@
     "express": "4.16.0",
     "body-parser": "1.18.2",
     "jsonwebtoken": "8.5.0",
-    "sqlite3": "4.0.0"
+    "sqlite3": "5.0.2"
   }
 }
