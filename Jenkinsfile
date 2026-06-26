@@ -1,19 +1,22 @@
 pipeline {
+    // Defines where the pipeline runs. 'any' means it will run on the available Jenkins node.
     agent any
 
-    // This block summons Node.js so SonarQube can scan JavaScript
+    // Automatically installs and injects necessary build tools into the pipeline environment.
     tools {
+        // Required for SonarQube's JavaScript/TypeScript analysis engine
         nodejs 'NodeJS' 
     }
 
     environment {
-        // Must match the exact name given in Jenkins Global Tool Configuration
+        // Maps the SonarScanner tool installed in Jenkins to an environment variable
         SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
+                // Pulls the latest code from the GitHub repository linked to this Jenkins job
                 checkout scm
                 echo 'Code checked out securely from GitHub!'
             }
@@ -21,15 +24,27 @@ pipeline {
 
         stage('DevSecOps Environment Check') {
             steps {
+                // Validates that Docker-out-of-Docker (DooD) socket mapping is working
                 echo 'Verifying Docker-out-of-Docker connectivity...'
                 sh 'docker --version'
-                sh 'docker ps'
+            }
+        }
+
+        stage('Secrets Scanning (TruffleHog)') {
+            steps {
+                echo 'Hunting for leaked passwords, AWS keys, and API tokens...'
+                // Mounts the current Jenkins workspace into the TruffleHog container.
+                // TruffleHog scans the filesystem for high-entropy strings and known credential patterns.
+                // If verified secrets are found, it exits with a non-zero code, failing the build.
+                sh 'docker run --rm -v ${WORKSPACE}:/proj trufflesecurity/trufflehog:latest filesystem /proj'
             }
         }
 
         stage('SAST: SonarQube Code Analysis') {
             steps {
+                // Wraps the execution in SonarQube context, sending the results to the external Sonar container
                 withSonarQubeEnv('SonarQube') { 
+                    // Executes the static code analysis, explicitly ignoring non-production folders
                     sh """
                     \${SCANNER_HOME}/bin/sonar-scanner \
                       -Dsonar.projectKey=autonomous-devsecops-engine \
@@ -43,9 +58,10 @@ pipeline {
 
         stage('Quality Gate Check') {
             steps {
-                // Jenkins will pause here and wait for SonarQube's webhook response
+                // Pauses the pipeline to wait for SonarQube to calculate the final grade (via Webhook)
                 timeout(time: 5, unit: 'MINUTES') {
-                    // If the gate fails, 'abortPipeline: true' instantly kills the build
+                    // 'abortPipeline: true' makes Jenkins act as a security bouncer. 
+                    // If SonarQube reports a failure (e.g., Critical Vulnerabilities), the build dies here.
                     waitForQualityGate abortPipeline: true
                 }
             }
@@ -54,6 +70,7 @@ pipeline {
         stage('Build Target Docker Image') {
             steps {
                 echo 'Building the vulnerable UPI application image...'
+                // Navigates into the application folder to build the Docker image
                 dir('dummy-upi-app') {
                     sh 'docker build -t dummy-upi-app:latest .'
                 }
@@ -63,6 +80,8 @@ pipeline {
         stage('SCA: Trivy Container Scan') {
             steps {
                 echo 'Summoning Trivy to scan the application image...'
+                // Mounts the Docker socket to allow Trivy to scan the image we just built.
+                // It looks for CVEs in the base OS layer (Alpine) and package.json dependencies.
                 sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image dummy-upi-app:latest'
             }
         }
