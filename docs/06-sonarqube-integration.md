@@ -97,13 +97,3 @@ Jenkins successfully downloaded the sonar-scanner-cli binary.
 The scanner successfully communicated with the SonarQube Server at http://172.17.0.1:9000.
 
 The project Autonomous DevSecOps Engine was automatically provisioned in the SonarQube dashboard with a "Passed" quality gate status.
-
-**Wrap up Phase 3:**
-1. Open your `docs/06-sonarqube-integration.md` file in VS Code.
-2. Paste the text above and save it (`Ctrl + S`).
-3. Commit it to your repository so your documentation is perfectly up-to-date:
-```bash
-   git add docs/06-sonarqube-integration.md
-   git commit -m "docs: finalized Phase 3 SonarQube SAST implementation details"
-   git push origin main
-```
