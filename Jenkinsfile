@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    // This block summons Node.js so SonarQube can scan JavaScript
+    tools {
+        nodejs 'NodeJS' 
+    }
+
     environment {
         // Must match the exact name given in Jenkins Global Tool Configuration
         SCANNER_HOME = tool 'SonarScanner'
@@ -39,7 +44,6 @@ pipeline {
         stage('Build Target Docker Image') {
             steps {
                 echo 'Building the vulnerable UPI application image...'
-                // The dir() command tells Jenkins to go into your new folder
                 dir('dummy-upi-app') {
                     sh 'docker build -t dummy-upi-app:latest .'
                 }
@@ -49,7 +53,6 @@ pipeline {
         stage('SCA: Trivy Container Scan') {
             steps {
                 echo 'Summoning Trivy to scan the application image...'
-                // Jenkins uses the Docker socket to spin up Trivy and scan the image we just built
                 sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image dummy-upi-app:latest'
             }
         }
