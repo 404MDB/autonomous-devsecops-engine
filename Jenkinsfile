@@ -41,6 +41,16 @@ pipeline {
             }
         }
 
+        stage('Quality Gate Check') {
+            steps {
+                // Jenkins will pause here and wait for SonarQube's webhook response
+                timeout(time: 5, unit: 'MINUTES') {
+                    // If the gate fails, 'abortPipeline: true' instantly kills the build
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Build Target Docker Image') {
             steps {
                 echo 'Building the vulnerable UPI application image...'
