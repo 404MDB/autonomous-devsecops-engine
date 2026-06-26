@@ -4,7 +4,11 @@ FROM node:14-alpine
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install
+
+# Install python and build tools needed to compile native modules (sqlite3)
+RUN apk add --no-cache python3 make g++ && \
+    npm install && \
+    apk del python3 make g++
 
 COPY . .
 
