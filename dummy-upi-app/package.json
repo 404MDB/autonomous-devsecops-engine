@@ -1,12 +1,13 @@
 {
   "name": "dummy-upi-gateway",
   "version": "1.0.0",
-  "description": "Vulnerable UPI Payment Mock App for DevSecOps",
+  "description": "Secure UPI Payment Mock App for DevSecOps",
   "main": "server.js",
   "dependencies": {
-    "express": "4.16.0",
-    "body-parser": "1.18.2",
-    "jsonwebtoken": "8.5.0",
-    "sqlite3": "5.0.2"
+    "express": "4.20.0",
+    "body-parser": "1.20.3",
+    "jsonwebtoken": "9.0.0",
+    "sqlite3": "5.1.7",
+    "form-data": "4.0.4"
   }
 }
