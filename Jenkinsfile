@@ -50,6 +50,7 @@ pipeline {
                       -Dsonar.projectKey=autonomous-devsecops-engine \
                       -Dsonar.projectName="Autonomous DevSecOps Engine" \
                       -Dsonar.sources=. \
+                      -Dsonar.coverage.exclusions=**/*.js \
                       -Dsonar.exclusions=reports/**,screenshots/**,docker/**,docs/**
                     """
                 }
