@@ -83,7 +83,7 @@ pipeline {
                 echo 'Summoning Trivy to scan the application image...'
                 // Mounts the Docker socket to allow Trivy to scan the image we just built.
                 // It looks for CVEs in the base OS layer (Alpine) and package.json dependencies.
-                sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image dummy-upi-app:latest'
+                sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 1 --severity CRITICAL dummy-upi-app:latest'
             }
         }
     }
