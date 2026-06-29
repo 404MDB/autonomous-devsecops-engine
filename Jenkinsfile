@@ -86,5 +86,43 @@ pipeline {
                 sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 1 --severity CRITICAL dummy-upi-app:latest'
             }
         }
+
+        stage('DAST: OWASP ZAP Dynamic Scan') {
+            steps {
+                echo 'Spinning up application for dynamic security testing...'
+                sh '''
+                    # 1. Create a temporary network so ZAP and the App can communicate
+                    docker network create devsecops-net || true
+
+                    # 2. Run the hardened application in the background
+                    docker run -d --name dummy-app --network devsecops-net dummy-upi-app:latest
+
+                    # Give the Node.js server 5 seconds to boot up
+                    sleep 5
+                '''
+                
+                echo 'Unleashing OWASP ZAP to attack the running application...'
+                sh '''
+                    # 3. Run ZAP Baseline Scan against the running container
+                    # -t: target URL (using the container name "dummy-app")
+                    # -r: output report name
+                    # -I: ignore exit codes for now (don't fail the pipeline, just generate the report)
+                    docker run --rm --network devsecops-net -v ${WORKSPACE}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I
+                '''
+            }
+            post {
+                always {
+                    echo 'Tearing down test environment and saving ZAP report...'
+                    sh '''
+                        # 4. Stop and remove the test container and network
+                        docker stop dummy-app || true
+                        docker rm dummy-app || true
+                        docker network rm devsecops-net || true
+                    '''
+                    // 5. Save the HTML report as a Jenkins build artifact
+                    archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
+                }
+            }
+        }
     }
 }
