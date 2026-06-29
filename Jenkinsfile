@@ -107,7 +107,7 @@ pipeline {
                     # -t: target URL (using the container name "dummy-app")
                     # -r: output report name
                     # -I: ignore exit codes for now (don't fail the pipeline, just generate the report)
-                    docker run --rm --network devsecops-net -v ${WORKSPACE}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I
+                    docker run --rm -u root --network devsecops-net -v ${WORKSPACE}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I
                 '''
             }
             post {
