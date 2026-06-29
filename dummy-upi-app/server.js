@@ -1,10 +1,13 @@
 const express = require('express');
+const helmet = require('helmet'); // FIXED SECURITY FLAW 6: Helmet added for HTTP Header Security
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 const port = 3000;
+
+app.use(helmet()); // Activate the security shields!
 
 // FIXED SECURITY FLAW 1: Fetching the key from a secure environment variable
 const SECRET_KEY = process.env.UPI_SECRET_KEY || "fallback_secret_for_local_testing_only";

@@ -4,10 +4,11 @@
   "description": "Secure UPI Payment Mock App for DevSecOps",
   "main": "server.js",
   "dependencies": {
-    "express": "4.20.0",
     "body-parser": "1.20.3",
+    "express": "4.20.0",
+    "form-data": "4.0.4",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "9.0.0",
-    "sqlite3": "5.1.7",
-    "form-data": "4.0.4"
+    "sqlite3": "5.1.7"
   }
 }
