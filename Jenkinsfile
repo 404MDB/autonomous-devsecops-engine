@@ -104,22 +104,24 @@ pipeline {
                 echo 'Unleashing OWASP ZAP to attack the running application...'
                 sh '''
                     # 3. Run ZAP Baseline Scan against the running container
-                    # -t: target URL (using the container name "dummy-app")
-                    # -r: output report name
-                    # -I: ignore exit codes for now (don't fail the pipeline, just generate the report)
-                    docker run --rm -u root --network devsecops-net -v ${WORKSPACE}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I
+                    # We removed --rm and the -v volume mount so the container sticks around temporarily.
+                    docker run --name zap-scanner -u root --network devsecops-net ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I || true
+                    
+                    # 4. Reach into the stopped ZAP container and copy the report into Jenkins' workspace!
+                    docker cp zap-scanner:/zap/wrk/zap-report.html ./zap-report.html
                 '''
             }
             post {
                 always {
                     echo 'Tearing down test environment and saving ZAP report...'
                     sh '''
-                        # 4. Stop and remove the test container and network
+                        # 5. Stop and remove the test container and network
                         docker stop dummy-app || true
                         docker rm dummy-app || true
+                        docker rm zap-scanner || true   # Clean up the ZAP container now that we have the file!
                         docker network rm devsecops-net || true
                     '''
-                    // 5. Save the HTML report as a Jenkins build artifact
+                    // 6. Save the HTML report as a Jenkins build artifact
                     archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
                 }
             }
