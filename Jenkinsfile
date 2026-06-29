@@ -91,21 +91,20 @@ pipeline {
             steps {
                 echo 'Spinning up application for dynamic security testing...'
                 sh '''
-                    # 1. Create a temporary network so ZAP and the App can communicate
+                    # 1. Create a temporary network and a dummy volume for ZAP
                     docker network create devsecops-net || true
+                    docker volume create zap-reports || true
 
                     # 2. Run the hardened application in the background
                     docker run -d --name dummy-app --network devsecops-net dummy-upi-app:latest
 
-                    # Give the Node.js server 5 seconds to boot up
                     sleep 5
                 '''
                 
                 echo 'Unleashing OWASP ZAP to attack the running application...'
                 sh '''
-                    # 3. Run ZAP Baseline Scan against the running container
-                    # We removed --rm and the -v volume mount so the container sticks around temporarily.
-                    docker run --name zap-scanner -u root --network devsecops-net ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I || true
+                    # 3. Run ZAP using the dummy volume (-v zap-reports:/zap/wrk) to satisfy the internal check
+                    docker run --name zap-scanner -u root --network devsecops-net -v zap-reports:/zap/wrk ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://dummy-app:3000 -r zap-report.html -I || true
                     
                     # 4. Reach into the stopped ZAP container and copy the report into Jenkins' workspace!
                     docker cp zap-scanner:/zap/wrk/zap-report.html ./zap-report.html
@@ -115,16 +114,18 @@ pipeline {
                 always {
                     echo 'Tearing down test environment and saving ZAP report...'
                     sh '''
-                        # 5. Stop and remove the test container and network
+                        # 5. Stop and remove the test containers, networks, and volumes
                         docker stop dummy-app || true
                         docker rm dummy-app || true
-                        docker rm zap-scanner || true   # Clean up the ZAP container now that we have the file!
+                        docker rm zap-scanner || true
                         docker network rm devsecops-net || true
+                        docker volume rm zap-reports || true
                     '''
                     // 6. Save the HTML report as a Jenkins build artifact
                     archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
                 }
             }
+        
         }
     }
 }
