@@ -1,6 +1,3 @@
-// TESTING PIPELINE - FAKE AWS KEY:
-// AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-
 const express = require('express');
 const helmet = require('helmet'); // FIXED SECURITY FLAW 6: Helmet added for HTTP Header Security
 const bodyParser = require('body-parser');
