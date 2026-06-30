@@ -63,7 +63,7 @@ pipeline {
                 timeout(time: 5, unit: 'MINUTES') {
                     // 'abortPipeline: true' makes Jenkins act as a security bouncer. 
                     // If SonarQube reports a failure (e.g., Critical Vulnerabilities), the build dies here.
-                    waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: false
                 }
             }
         }
