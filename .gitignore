@@ -1,0 +1,15 @@
+node_modules/
+dummy-upi-app/node_modules/
+
+reports/*
+!reports/.gitkeep
+
+screenshots/*
+!screenshots/.gitkeep
+
+*.log
+.env
+.env.*
+!.env.example
+
+zap-report.html
