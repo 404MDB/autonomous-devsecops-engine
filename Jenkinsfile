@@ -2,6 +2,11 @@ pipeline {
     // Defines where the pipeline runs. 'any' means it will run on the available Jenkins node.
     agent any
 
+    // Prevents two Jenkins builds from using/removing the same Docker containers, networks, or volumes.
+    options {
+        disableConcurrentBuilds()
+    }
+
     // Automatically installs and injects necessary build tools into the pipeline environment.
     tools {
         // Required for SonarQube's JavaScript/TypeScript analysis engine
@@ -126,48 +131,53 @@ pipeline {
                 echo 'Spinning up application for dynamic security testing...'
 
                 sh '''
-                    # 1. Prepare report directory
+                    # 1. Create unique Docker object names for this Jenkins build
+                    DAST_NETWORK="devsecops-net-${BUILD_NUMBER}"
+                    APP_CONTAINER="dummy-app-${BUILD_NUMBER}"
+                    ZAP_CONTAINER="zap-scanner-${BUILD_NUMBER}"
+                    ZAP_VOLUME="zap-reports-${BUILD_NUMBER}"
+
+                    # 2. Prepare report directory
                     mkdir -p reports/zap
 
-                    # 2. Remove old test containers, network, and volume if they already exist
-                    docker rm -f dummy-app zap-scanner 2>/dev/null || true
-                    docker network rm devsecops-net 2>/dev/null || true
-                    docker volume rm zap-reports 2>/dev/null || true
+                    # 3. Remove old objects for this build number if they exist
+                    docker rm -f "${APP_CONTAINER}" "${ZAP_CONTAINER}" 2>/dev/null || true
+                    docker network rm "${DAST_NETWORK}" 2>/dev/null || true
+                    docker volume rm "${ZAP_VOLUME}" 2>/dev/null || true
 
-                    # 3. Create a temporary Docker network and Docker named volume
-                    docker network create devsecops-net
-                    docker volume create zap-reports
+                    # 4. Create temporary Docker network and Docker named volume
+                    docker network create "${DAST_NETWORK}"
+                    docker volume create "${ZAP_VOLUME}"
 
-                    # 4. Run the dummy UPI application in the background
-                    docker run -d --name dummy-app \
-                      --network devsecops-net \
+                    # 5. Run the dummy UPI application in the background
+                    docker run -d --name "${APP_CONTAINER}" \
+                      --network "${DAST_NETWORK}" \
                       dummy-upi-app:latest
 
-                    # 5. Give the application time to start
+                    # 6. Give the application time to start
                     sleep 10
-                '''
 
-                echo 'Unleashing OWASP ZAP to attack the running application...'
+                    # 7. Confirm application container is running
+                    docker ps --filter "name=${APP_CONTAINER}"
 
-                sh '''
-                    # 6. Run OWASP ZAP baseline scan
+                    # 8. Run OWASP ZAP baseline scan
                     # HTML report is used for Jenkins evidence
                     # XML report is used for DefectDojo import
-                    docker run --name zap-scanner -u root \
-                      --network devsecops-net \
-                      -v zap-reports:/zap/wrk \
+                    docker run --name "${ZAP_CONTAINER}" -u root \
+                      --network "${DAST_NETWORK}" \
+                      -v "${ZAP_VOLUME}:/zap/wrk" \
                       ghcr.io/zaproxy/zaproxy:stable \
                       zap-baseline.py \
-                      -t http://dummy-app:3000 \
+                      -t "http://${APP_CONTAINER}:3000" \
                       -r zap-report.html \
                       -x zap-report.xml \
                       -I || true
 
-                    # 7. Copy ZAP reports from scanner container into Jenkins workspace
-                    docker cp zap-scanner:/zap/wrk/zap-report.html reports/zap/zap-report.html
-                    docker cp zap-scanner:/zap/wrk/zap-report.xml reports/zap/zap-report.xml
+                    # 9. Copy ZAP reports from scanner container into Jenkins workspace
+                    docker cp "${ZAP_CONTAINER}:/zap/wrk/zap-report.html" reports/zap/zap-report.html
+                    docker cp "${ZAP_CONTAINER}:/zap/wrk/zap-report.xml" reports/zap/zap-report.xml
 
-                    # 8. Verify reports exist
+                    # 10. Verify reports exist
                     test -s reports/zap/zap-report.html
                     test -s reports/zap/zap-report.xml
 
@@ -281,10 +291,15 @@ pipeline {
             echo 'Tearing down test environment and saving security reports...'
 
             sh '''
-                # Stop and remove temporary DAST containers, network, and volume
-                docker rm -f dummy-app zap-scanner 2>/dev/null || true
-                docker network rm devsecops-net 2>/dev/null || true
-                docker volume rm zap-reports 2>/dev/null || true
+                # Stop and remove temporary DAST containers, network, and volume for this Jenkins build
+                DAST_NETWORK="devsecops-net-${BUILD_NUMBER}"
+                APP_CONTAINER="dummy-app-${BUILD_NUMBER}"
+                ZAP_CONTAINER="zap-scanner-${BUILD_NUMBER}"
+                ZAP_VOLUME="zap-reports-${BUILD_NUMBER}"
+
+                docker rm -f "${APP_CONTAINER}" "${ZAP_CONTAINER}" 2>/dev/null || true
+                docker network rm "${DAST_NETWORK}" 2>/dev/null || true
+                docker volume rm "${ZAP_VOLUME}" 2>/dev/null || true
             '''
 
             // Save generated reports and DefectDojo upload responses as Jenkins build artifacts
