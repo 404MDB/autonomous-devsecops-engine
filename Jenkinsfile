@@ -101,17 +101,20 @@ pipeline {
                 echo 'Generating Trivy JSON report for DefectDojo...'
 
                 // Trivy JSON report is required for DefectDojo import.
-                // This stage generates the report but does not fail the pipeline on vulnerabilities.
+                // Output is redirected by Jenkins shell into the workspace to avoid Docker bind-mount issues.
                 sh '''
                     mkdir -p reports/trivy
 
                     docker run --rm \
                       -v /var/run/docker.sock:/var/run/docker.sock \
-                      -v "${WORKSPACE}/reports/trivy:/reports" \
                       aquasec/trivy image \
+                      --quiet \
+                      --skip-version-check \
+                      --scanners vuln \
                       --format json \
-                      --output /reports/trivy-image-report.json \
-                      dummy-upi-app:latest
+                      dummy-upi-app:latest > reports/trivy/trivy-image-report.json
+
+                    test -s reports/trivy/trivy-image-report.json
 
                     ls -lh reports/trivy/
                 '''
@@ -126,12 +129,14 @@ pipeline {
                     # 1. Prepare report directory
                     mkdir -p reports/zap
 
-                    # 2. Remove old test containers and network if they already exist
+                    # 2. Remove old test containers, network, and volume if they already exist
                     docker rm -f dummy-app zap-scanner 2>/dev/null || true
                     docker network rm devsecops-net 2>/dev/null || true
+                    docker volume rm zap-reports 2>/dev/null || true
 
-                    # 3. Create a temporary Docker network for application and ZAP scanner
+                    # 3. Create a temporary Docker network and Docker named volume
                     docker network create devsecops-net
+                    docker volume create zap-reports
 
                     # 4. Run the dummy UPI application in the background
                     docker run -d --name dummy-app \
@@ -148,15 +153,23 @@ pipeline {
                     # 6. Run OWASP ZAP baseline scan
                     # HTML report is used for Jenkins evidence
                     # XML report is used for DefectDojo import
-                    docker run --rm --name zap-scanner -u root \
+                    docker run --name zap-scanner -u root \
                       --network devsecops-net \
-                      -v "${WORKSPACE}/reports/zap:/zap/wrk" \
+                      -v zap-reports:/zap/wrk \
                       ghcr.io/zaproxy/zaproxy:stable \
                       zap-baseline.py \
                       -t http://dummy-app:3000 \
                       -r zap-report.html \
                       -x zap-report.xml \
                       -I || true
+
+                    # 7. Copy ZAP reports from scanner container into Jenkins workspace
+                    docker cp zap-scanner:/zap/wrk/zap-report.html reports/zap/zap-report.html
+                    docker cp zap-scanner:/zap/wrk/zap-report.xml reports/zap/zap-report.xml
+
+                    # 8. Verify reports exist
+                    test -s reports/zap/zap-report.html
+                    test -s reports/zap/zap-report.xml
 
                     ls -lh reports/zap/
                 '''
@@ -173,7 +186,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'defectdojo-api-token', variable: 'DEFECTDOJO_API_TOKEN')]) {
                     sh '''
                         # 1. Verify that Trivy report exists before uploading
-                        test -f reports/trivy/trivy-image-report.json
+                        test -s reports/trivy/trivy-image-report.json
 
                         # 2. Upload Trivy JSON report to DefectDojo
                         set +x
@@ -214,7 +227,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'defectdojo-api-token', variable: 'DEFECTDOJO_API_TOKEN')]) {
                     sh '''
                         # 1. Verify that ZAP XML report exists before uploading
-                        test -f reports/zap/zap-report.xml
+                        test -s reports/zap/zap-report.xml
 
                         # 2. Upload ZAP XML report to DefectDojo
                         set +x
@@ -268,9 +281,10 @@ pipeline {
             echo 'Tearing down test environment and saving security reports...'
 
             sh '''
-                # Stop and remove temporary DAST containers and network
+                # Stop and remove temporary DAST containers, network, and volume
                 docker rm -f dummy-app zap-scanner 2>/dev/null || true
                 docker network rm devsecops-net 2>/dev/null || true
+                docker volume rm zap-reports 2>/dev/null || true
             '''
 
             // Save generated reports and DefectDojo upload responses as Jenkins build artifacts
