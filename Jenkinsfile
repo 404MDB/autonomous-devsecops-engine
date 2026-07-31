@@ -408,12 +408,56 @@ pipeline {
             }
         }
 
+        stage('AI Security Intelligence Analysis') {
+            steps {
+                echo 'Running AI Security Intelligence analysis...'
+
+                // This stage analyzes Trivy, OWASP ZAP, SBOM, and Cosign evidence.
+                // It generates an AI summary, risk score, recommendations, and release decision.
+                sh '''
+                    set -e
+
+                    mkdir -p ai-security-engine/input
+                    mkdir -p ai-security-engine/output
+                    mkdir -p reports/ai
+
+                    rm -f ai-security-engine/input/* || true
+                    rm -f ai-security-engine/output/* || true
+                    rm -f reports/ai/* || true
+
+                    cp reports/trivy/trivy-image-report.json ai-security-engine/input/trivy-image-report.json
+                    cp reports/zap/zap-report.xml ai-security-engine/input/zap-report.xml
+                    cp reports/sbom/dummy-upi-app-cyclonedx.json ai-security-engine/input/dummy-upi-app-cyclonedx.json
+                    cp reports/cosign/dummy-upi-app-signature-verification.txt ai-security-engine/input/cosign-verification.txt
+
+                    docker run --rm \
+                      -v jenkins_home:/var/jenkins_home \
+                      -w "$WORKSPACE" \
+                      python:3.12-slim \
+                      python ai-security-engine/src/security_intelligence.py
+
+                    cp ai-security-engine/output/ai-security-summary.json reports/ai/ai-security-summary.json
+                    cp ai-security-engine/output/ai-security-report.md reports/ai/ai-security-report.md
+                    cp ai-security-engine/output/release-decision.txt reports/ai/release-decision.txt
+
+                    echo "===== AI RELEASE DECISION ====="
+                    cat reports/ai/release-decision.txt
+
+                    test -s reports/ai/ai-security-summary.json
+                    test -s reports/ai/ai-security-report.md
+                    test -s reports/ai/release-decision.txt
+
+                    echo "AI Security Intelligence analysis completed successfully."
+                '''
+            }
+        }
+
         stage('SCA: Trivy Container Scan Critical Gate') {
             steps {
                 echo 'Summoning Trivy to enforce CRITICAL vulnerability gate...'
 
-                // This gate runs after DefectDojo upload.
-                // Even if the pipeline fails here, reports are already uploaded to DefectDojo.
+                // This gate runs after DefectDojo upload and AI security analysis.
+                // Even if the pipeline fails here, reports are already uploaded to DefectDojo and analyzed by the AI layer.
                 sh '''
                     docker run --rm \
                       -v /var/run/docker.sock:/var/run/docker.sock \
@@ -445,16 +489,16 @@ pipeline {
                 rm -f reports/cosign/dummy-upi-app-image.tar 2>/dev/null || true
             '''
 
-            // Save generated security reports, SBOM reports, Cosign evidence, and DefectDojo upload responses as Jenkins build artifacts
-            archiveArtifacts artifacts: 'reports/**/*.json,reports/**/*.xml,reports/**/*.html,reports/**/*.txt,reports/**/*.sha256', fingerprint: true, allowEmptyArchive: true
+            // Save generated security reports, SBOM reports, Cosign evidence, DefectDojo upload responses, and AI reports as Jenkins build artifacts
+            archiveArtifacts artifacts: 'reports/**/*.json,reports/**/*.xml,reports/**/*.html,reports/**/*.txt,reports/**/*.sha256,reports/**/*.md', fingerprint: true, allowEmptyArchive: true
         }
 
         success {
-            echo 'Pipeline completed successfully. Security reports, SBOM artifacts, and Cosign evidence uploaded/archived.'
+            echo 'Pipeline completed successfully. Security reports, SBOM artifacts, Cosign evidence, DefectDojo evidence, and AI reports archived.'
         }
 
         failure {
-            echo 'Pipeline failed. Check Jenkins logs, security gates, SBOM generation, Cosign verification, and DefectDojo upload responses.'
+            echo 'Pipeline failed. Check Jenkins logs, security gates, SBOM generation, Cosign verification, DefectDojo uploads, and AI analysis reports.'
         }
     }
 }
