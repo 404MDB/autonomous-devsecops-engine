@@ -615,6 +615,3 @@ Final Trivy CRITICAL Gate: Working as expected
 ```
 
 The final Jenkins build may fail at the Trivy CRITICAL gate because CRITICAL vulnerabilities are present in the target image. This is expected security behavior and confirms that the pipeline is blocking unsafe builds correctly.
-```text
-Phase 8: AI Security Intelligence Layer
-```
