@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devsecops
+  labels:
+    app.kubernetes.io/name: autonomous-devsecops-engine
+    app.kubernetes.io/part-of: phase-9-kubernetes-deployment
