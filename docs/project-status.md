@@ -8,9 +8,9 @@ Autonomous AI-Driven DevSecOps Engine: Secure SSDLC and Cloud Self-Healing Platf
 
 ## Project Objective
 
-The objective of this project is to build an end-to-end DevSecOps ecosystem that integrates CI/CD automation, security scanning, vulnerability detection, secure container delivery, dynamic application testing, vulnerability management, AI-assisted remediation, Kubernetes deployment, monitoring, runtime security, and autonomous self-healing.
+The objective of this project is to build an end-to-end AI-driven DevSecOps ecosystem that integrates CI/CD automation, Secure Software Development Lifecycle controls, security scanning, vulnerability management, supply chain security, AI-assisted security analysis, Kubernetes deployment, GitOps, monitoring, runtime security, and autonomous self-healing.
 
-The project follows Secure Software Development Lifecycle principles and uses open-source tools where possible.
+The platform is designed to demonstrate how modern DevSecOps pipelines can automatically detect, analyze, prioritize, and block security risks before unsafe software reaches deployment environments.
 
 ---
 
@@ -18,19 +18,19 @@ The project follows Secure Software Development Lifecycle principles and uses op
 
 GitHub Repository:
 
-```text id="kcumua"
+```text
 https://github.com/404MDB/autonomous-devsecops-engine
 ```
 
 Branch:
 
-```text id="iz350q"
+```text
 main
 ```
 
 Local WSL2 repository path:
 
-```text id="zxyfb2"
+```text
 /home/meet/projects/Autonomous-DevSecOps-Engine/autonomous-devsecops-engine
 ```
 
@@ -38,7 +38,7 @@ Local WSL2 repository path:
 
 ## Current Pipeline Flow
 
-```text id="0netms"
+```text
 GitHub Repository
 ↓
 Jenkins SCM Checkout
@@ -49,34 +49,40 @@ TruffleHog Secrets Scan
 ↓
 SonarQube SAST Analysis
 ↓
-Quality Gate Check
+SonarQube Quality Gate Check
 ↓
 Docker Image Build
 ↓
-Trivy Container Scan
+Trivy JSON Vulnerability Report
 ↓
-Temporary Application Deployment
+Syft SBOM Generation
+↓
+Cosign Image Artifact Signing and Verification
 ↓
 OWASP ZAP DAST Scan
 ↓
-Report Archival
+Upload Trivy Report to DefectDojo
 ↓
-Cleanup
+Upload ZAP Report to DefectDojo
+↓
+Trivy CRITICAL Vulnerability Gate
+↓
+Report Archival and Cleanup
 ```
 
 ---
 
 ## Completed Phases
 
-| Phase   | Area                                     | Tool / Technology                                      | Status   |
-| ------- | ---------------------------------------- | ------------------------------------------------------ | -------- |
-| Phase 1 | Environment Setup                        | WSL2, Ubuntu 24.04, VS Code Remote WSL, Docker Desktop | Complete |
-| Phase 2 | CI/CD Foundation                         | Jenkins, GitHub, Docker Outside of Docker              | Complete |
-| Phase 3 | Secrets Detection                        | TruffleHog                                             | Complete |
-| Phase 4 | SCA and Quality Gate Enforcement         | Trivy, SonarQube Quality Gate                          | Complete |
-| Phase 5 | Container Security                       | Hardened Dockerfile, Node 20, non-root user            | Complete |
-| Phase 6 | Dynamic Application Security Testing     | OWASP ZAP                                              | Complete |
-| Phase 7 | Pipeline Evidence and Cleanup Validation | Jenkins Artifacts, Docker Cleanup                      | Complete |
+| Phase | Area | Tool / Technology | Status |
+|---|---|---|---|
+| Phase 1 | Environment Setup | WSL2, Ubuntu 24.04, VS Code Remote WSL, Docker Desktop | Completed |
+| Phase 2 | CI/CD Foundation | Jenkins, GitHub, Docker Outside of Docker | Completed |
+| Phase 3 | Secrets Detection and SAST | TruffleHog, SonarQube | Completed |
+| Phase 4 | Vulnerability Scanning and Security Gates | Trivy, SonarQube Quality Gate | Completed |
+| Phase 5 | Dynamic Application Security Testing | OWASP ZAP | Completed |
+| Phase 6 | Vulnerability Management | DefectDojo | Completed |
+| Phase 7 | SBOM and Supply Chain Security | Syft, Cosign | Completed |
 
 ---
 
@@ -88,6 +94,9 @@ The current Jenkins DevSecOps pipeline uses the following security tools:
 2. SonarQube
 3. Trivy
 4. OWASP ZAP
+5. DefectDojo
+6. Syft
+7. Cosign
 
 ---
 
@@ -98,78 +107,167 @@ The current Jenkins DevSecOps pipeline uses the following security tools:
 3. Secrets Scanning using TruffleHog
 4. SAST using SonarQube
 5. Quality Gate Check
-6. Docker Image Build
-7. Trivy Container Scan
-8. OWASP ZAP Dynamic Scan
-9. Artifact Archival
-10. Cleanup
+6. Build Target Docker Image
+7. Generate Trivy JSON Report
+8. Generate SBOM Reports with Syft
+9. Sign and Verify Image Artifact with Cosign
+10. DAST using OWASP ZAP
+11. Upload Trivy Report to DefectDojo
+12. Upload ZAP Report to DefectDojo
+13. Trivy Container Scan CRITICAL Gate
+14. Artifact Archival
+15. Cleanup
 
 ---
 
 ## Latest Verified Jenkins Build
 
-The latest Jenkins build completed successfully.
+The latest Jenkins build executed successfully through SBOM generation, Cosign signing and verification, OWASP ZAP DAST, DefectDojo uploads, cleanup, and artifact archival.
+
+Verified successful stages:
+
+```text
+Generate SBOM Reports with Syft
+Sign and Verify Image Artifact with Cosign
+DAST: OWASP ZAP Dynamic Scan
+Upload Trivy Report to DefectDojo
+Upload ZAP Report to DefectDojo
+Artifact Archival
+Docker Cleanup
+```
 
 Final build result:
 
-```text id="el51sg"
-Finished: SUCCESS
+```text
+Finished: FAILURE
 ```
+
+Reason:
+
+```text
+The pipeline failed at the final Trivy CRITICAL vulnerability gate.
+This is expected security behavior because CRITICAL vulnerabilities were detected.
+```
+
+---
+
+## Latest SBOM Result
+
+Syft generated two SBOM reports for the Docker image.
+
+Generated SBOM files:
+
+```text
+reports/sbom/dummy-upi-app-cyclonedx.json
+reports/sbom/dummy-upi-app-spdx.json
+```
+
+Jenkins workspace verification:
+
+```text
+dummy-upi-app-cyclonedx.json   1.7M
+dummy-upi-app-spdx.json        3.3M
+```
+
+---
+
+## Latest Cosign Result
+
+Cosign image artifact signing and verification was completed successfully.
+
+Generated Cosign evidence files:
+
+```text
+reports/cosign/cosign-verify-raw-output.txt
+reports/cosign/dummy-upi-app-image.sha256
+reports/cosign/dummy-upi-app-image.sigstore.json
+reports/cosign/dummy-upi-app-signature-verification.txt
+```
+
+Verified result:
+
+```text
+Cosign Signature Verification: PASSED
+Artifact: dummy-upi-app:latest
+Signed Artifact Type: Docker image archive
+Bundle: reports/cosign/dummy-upi-app-image.sigstore.json
+Checksum: reports/cosign/dummy-upi-app-image.sha256
+Public Key Credential: cosign-public-key
+Result: Verified OK
+```
+
+---
+
+## Latest DefectDojo Result
+
+DefectDojo vulnerability management has been integrated with Jenkins.
+
+Completed DefectDojo work:
+
+```text
+DefectDojo deployed locally
+Academic Capstone organization created
+Autonomous AI-Driven DevSecOps Engine asset created
+CI/CD engagement created
+Manual Trivy report import completed
+Manual ZAP report import completed
+Jenkins automated Trivy report upload completed
+Jenkins automated ZAP report upload completed
+```
+
+DefectDojo is now used as the centralized vulnerability management platform for vulnerability tracking, deduplication, prioritization, and audit evidence.
 
 ---
 
 ## Latest OWASP ZAP Result
 
-OWASP ZAP Baseline Scan executed successfully against the temporary application container.
+OWASP ZAP DAST is integrated into the Jenkins pipeline.
 
-Target tested:
+Target tested inside Jenkins temporary Docker network:
 
-```text id="fgbpxl"
-http://dummy-app:3000
+```text
+http://dummy-app-${BUILD_NUMBER}:3000
 ```
 
-ZAP summary:
+Generated reports:
 
-```text id="0g0x8x"
-FAIL-NEW: 0
-FAIL-INPROG: 0
-WARN-NEW: 4
-WARN-INPROG: 0
-INFO: 0
-IGNORE: 0
-PASS: 63
+```text
+reports/zap/zap-report.html
+reports/zap/zap-report.xml
 ```
 
-Warnings detected:
+The ZAP HTML report is used as Jenkins evidence.
 
-1. Storable and Cacheable Content
-2. CSP: Failure to Define Directive with No Fallback
-3. Permissions Policy Header Not Set
-4. Cross-Origin-Embedder-Policy Header Missing or Invalid
-
-The ZAP HTML report was generated as:
-
-```text id="b5swbs"
-zap-report.html
-```
-
-The report was archived as a Jenkins build artifact.
+The ZAP XML report is used for DefectDojo upload.
 
 ---
 
 ## Latest Trivy Result
 
-Trivy container image scanning executed successfully.
-
-The scan output showed clean package results for the displayed Node.js package list.
+Trivy container image scanning is working as the final security gate.
 
 Current enforcement:
 
-```bash id="1qffse"
+```bash
 --exit-code 1 --severity CRITICAL
 ```
 
-This means the Jenkins pipeline is configured to fail if CRITICAL vulnerabilities are found in the scanned container image.
+Latest final gate result:
+
+```text
+dummy-upi-app:latest (debian 12.13)
+Total: 7 (CRITICAL: 7)
+
+Node.js (node-pkg)
+Total: 2 (CRITICAL: 2)
+```
+
+Pipeline behavior:
+
+```text
+The Jenkins pipeline fails when CRITICAL vulnerabilities are detected.
+This confirms that the pipeline blocks unsafe image promotion.
+```
 
 ---
 
@@ -177,69 +275,81 @@ This means the Jenkins pipeline is configured to fail if CRITICAL vulnerabilitie
 
 SonarQube Quality Gate integration is implemented.
 
-Initial validation confirmed that Jenkins can abort the pipeline when SonarQube Quality Gate fails.
+Initial validation confirmed that Jenkins can abort the pipeline when the SonarQube Quality Gate fails.
 
 Current Jenkinsfile configuration:
 
-```groovy id="1qe1pr"
+```groovy
 waitForQualityGate abortPipeline: false
 ```
 
 Current reason:
 
-The Quality Gate is temporarily configured as non-blocking for academic development continuity. This allows later stages such as Docker image build, Trivy scanning, and OWASP ZAP DAST scanning to execute for demonstration and evidence collection.
+The Quality Gate is temporarily configured as non-blocking for academic development continuity. This allows later stages such as Docker build, Trivy scanning, ZAP DAST, DefectDojo upload, SBOM generation, and Cosign verification to execute for evidence collection.
 
 Production recommendation:
 
-```groovy id="kgfvul"
+```groovy
 waitForQualityGate abortPipeline: true
 ```
 
-Before presenting the project as a production-grade implementation, the Quality Gate should be restored to blocking mode.
+Before presenting this as a production-grade implementation, the Quality Gate should be restored to blocking mode.
 
 ---
 
 ## Docker Cleanup Validation
 
-The OWASP ZAP DAST stage automatically cleaned up all temporary resources after execution.
+The OWASP ZAP DAST stage automatically cleans up all temporary resources after execution.
 
 Resources removed:
 
-* `dummy-app` container
-* `zap-scanner` container
-* `devsecops-net` Docker network
-* `zap-reports` Docker volume
+```text
+dummy-app-${BUILD_NUMBER}
+zap-scanner-${BUILD_NUMBER}
+devsecops-net-${BUILD_NUMBER}
+zap-reports-${BUILD_NUMBER}
+```
 
-This confirms that the DAST environment is ephemeral and does not leave unnecessary resources after pipeline execution.
+This confirms that the DAST environment is ephemeral and does not leave unnecessary Docker resources after pipeline execution.
 
 ---
 
 ## Reports and Evidence
 
-| Evidence                  | Current Location        |
-| ------------------------- | ----------------------- |
-| SonarQube analysis result | SonarQube dashboard     |
-| Trivy scan result         | Jenkins console output  |
-| OWASP ZAP HTML report     | Jenkins build artifacts |
-| TruffleHog result         | Jenkins console output  |
-| Pipeline execution result | Jenkins console output  |
-| Cleanup evidence          | Jenkins console output  |
+| Evidence | Current Location |
+|---|---|
+| SonarQube analysis result | SonarQube dashboard |
+| TruffleHog result | Jenkins console output |
+| Trivy JSON report | reports/trivy/ |
+| Trivy final gate result | Jenkins console output |
+| ZAP HTML report | reports/zap/ |
+| ZAP XML report | reports/zap/ |
+| DefectDojo upload response | reports/trivy/ and reports/zap/ |
+| CycloneDX SBOM | reports/sbom/ |
+| SPDX SBOM | reports/sbom/ |
+| Cosign checksum | reports/cosign/ |
+| Cosign signature bundle | reports/cosign/ |
+| Cosign verification proof | reports/cosign/ |
+| Pipeline execution result | Jenkins console output |
+| Cleanup evidence | Jenkins console output |
 
 ---
 
 ## Current Documentation Status
 
-| Document                         | Status   |
-| -------------------------------- | -------- |
-| 01-wsl2-installation.md          | Complete |
+| Document | Status |
+|---|---|
+| 01-wsl2-installation.md | Complete |
 | 02-vscode-and-wsl-integration.md | Complete |
-| 03-docker-installation.md        | Complete |
-| 04-jenkins-installation.md       | Complete |
-| 05-github-integration.md         | Complete |
-| 06-sonarqube-integration.md      | Complete |
-| 07-trivy-sca-integration.md      | Complete |
+| 03-docker-installation.md | Complete |
+| 04-jenkins-installation.md | Complete |
+| 05-github-integration.md | Complete |
+| 06-sonarqube-integration.md | Complete |
+| 07-trivy-sca-integration.md | Complete |
 | 08-owasp-zap-dast-integration.md | Complete |
-| project-status.md                | Updated  |
+| 09-defectdojo-vulnerability-management.md | Complete |
+| 10-sbom-and-supply-chain-security.md | Complete |
+| project-status.md | Updated |
 
 ---
 
@@ -247,47 +357,58 @@ This confirms that the DAST environment is ephemeral and does not leave unnecess
 
 The following improvements are pending:
 
-1. Add screenshots for Jenkins successful build.
-2. Add screenshot of archived `zap-report.html`.
-3. Add screenshot of SonarQube dashboard.
-4. Add architecture diagram for the completed Phase 1 to Phase 7 pipeline.
-5. Save sample reports under the `reports/` directory if required for academic submission.
-6. Start DefectDojo integration for centralized vulnerability management.
+1. Add screenshots for Jenkins pipeline stages.
+2. Add screenshot of DefectDojo imported tests.
+3. Add screenshot of Jenkins archived SBOM artifacts.
+4. Add screenshot of Cosign verification proof.
+5. Add screenshot of Trivy CRITICAL gate failure.
+6. Add final architecture diagram.
+7. Add AI Security Intelligence Layer.
+8. Add Kubernetes deployment.
+9. Add GitOps deployment using Argo CD.
+10. Add monitoring using Prometheus and Grafana.
+11. Add self-healing proof-of-concept.
 
 ---
 
 ## Next Planned Phase
 
-# Phase 8 — Vulnerability Management Platform
+# Phase 8 — AI Security Intelligence Layer
 
-Planned tool:
+Planned tools:
 
-DefectDojo
+```text
+Python
+Local AI / LLM-assisted analysis
+Security report parsers
+JSON report summarization
+Risk scoring logic
+```
 
 Objectives:
 
-* Deploy DefectDojo.
-* Create a product for the DevSecOps Engine.
-* Create a CI/CD engagement.
-* Import vulnerability scan reports.
-* Centralize findings from security tools.
-* Deduplicate vulnerabilities.
-* Track vulnerability lifecycle.
-* Prioritize security risks.
-* Prepare the platform for AI-assisted vulnerability analysis.
+* Parse Trivy JSON reports.
+* Parse OWASP ZAP reports.
+* Parse SBOM metadata.
+* Summarize security findings.
+* Prioritize vulnerabilities based on severity and exploitability.
+* Recommend remediation actions.
+* Generate AI-readable security reports.
+* Produce release decision support.
+* Prepare the foundation for autonomous self-healing.
 
 ---
 
 ## Future Roadmap
 
-| Phase    | Area                         | Planned Tool                                                    |
-| -------- | ---------------------------- | --------------------------------------------------------------- |
-| Phase 8  | Vulnerability Management     | DefectDojo                                                      |
-| Phase 9  | AI Security Analysis         | Ollama                                                          |
-| Phase 10 | Kubernetes Migration         | Minikube, Kubernetes Manifests, Helm                            |
-| Phase 11 | Monitoring and Observability | Prometheus, Grafana                                             |
-| Phase 12 | Runtime Security             | Falco                                                           |
-| Phase 13 | Autonomous Self-Healing      | Automation Scripts, Kubernetes Recovery, AI-assisted Mitigation |
+| Phase | Area | Planned Tool |
+|---|---|---|
+| Phase 8 | AI Security Analysis | Python, Local AI, Report Parser |
+| Phase 9 | Kubernetes Migration | Kubernetes, Minikube / Kind |
+| Phase 10 | GitOps Deployment | Argo CD |
+| Phase 11 | Monitoring and Observability | Prometheus, Grafana, Alertmanager |
+| Phase 12 | Runtime Security | Falco |
+| Phase 13 | Autonomous Self-Healing | Automation Scripts, Kubernetes Recovery, AI-assisted Mitigation |
 
 ---
 
@@ -295,8 +416,11 @@ Objectives:
 
 Current status:
 
-```text id="qjsg14"
+```text
 Phase 1 to Phase 7 completed and verified.
-Latest Jenkins pipeline result: SUCCESS.
-Next phase: DefectDojo Vulnerability Management.
+Latest Jenkins pipeline result: FAILURE at expected Trivy CRITICAL gate.
+SBOM generation: Completed.
+Cosign signing and verification: Completed.
+DefectDojo vulnerability management: Completed.
+Next phase: AI Security Intelligence Layer.
 ```
