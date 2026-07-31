@@ -161,6 +161,111 @@ pipeline {
             }
         }
 
+        stage('Sign and Verify Image Artifact with Cosign') {
+            steps {
+                echo 'Signing and verifying Docker image artifact with Cosign...'
+
+                // Uses Jenkins credentials:
+                // cosign-private-key  -> Secret file containing cosign.key
+                // cosign-public-key   -> Secret file containing cosign.pub
+                // cosign-key-password -> Secret text containing Cosign key password
+                withCredentials([
+                    file(credentialsId: 'cosign-private-key', variable: 'COSIGN_PRIVATE_KEY'),
+                    file(credentialsId: 'cosign-public-key', variable: 'COSIGN_PUBLIC_KEY'),
+                    string(credentialsId: 'cosign-key-password', variable: 'COSIGN_PASSWORD')
+                ]) {
+                    sh '''
+                        set -e
+
+                        echo "Preparing Cosign signing workspace..."
+
+                        mkdir -p reports/cosign
+                        mkdir -p .jenkins-tools
+
+                        # Download Cosign binary only if it is not already available in the Jenkins workspace.
+                        # This avoids Docker bind-mount issues while still keeping the pipeline portable.
+                        if [ ! -x .jenkins-tools/cosign ]; then
+                          echo "Downloading Cosign..."
+                          curl -sSL -o .jenkins-tools/cosign \
+                            https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+                          chmod +x .jenkins-tools/cosign
+                        fi
+
+                        .jenkins-tools/cosign version
+
+                        # Create temporary key directory.
+                        # Jenkins secret files are copied here and removed automatically at the end of this stage.
+                        COSIGN_TEMP_DIR="$(mktemp -d)"
+                        trap 'rm -rf "${COSIGN_TEMP_DIR}"' EXIT
+
+                        install -m 600 "${COSIGN_PRIVATE_KEY}" "${COSIGN_TEMP_DIR}/cosign.key"
+                        install -m 644 "${COSIGN_PUBLIC_KEY}" "${COSIGN_TEMP_DIR}/cosign.pub"
+
+                        echo "Saving Docker image as a signable artifact..."
+
+                        docker save dummy-upi-app:latest -o reports/cosign/dummy-upi-app-image.tar
+
+                        sha256sum reports/cosign/dummy-upi-app-image.tar \
+                          | tee reports/cosign/dummy-upi-app-image.sha256
+
+                        echo "Signing image artifact using Cosign..."
+
+                        .jenkins-tools/cosign sign-blob \
+                          --yes \
+                          --key "${COSIGN_TEMP_DIR}/cosign.key" \
+                          --bundle reports/cosign/dummy-upi-app-image.sigstore.json \
+                          reports/cosign/dummy-upi-app-image.tar
+
+                        test -s reports/cosign/dummy-upi-app-image.sigstore.json
+
+                        echo "Verifying Cosign signature..."
+
+                        set +e
+                        .jenkins-tools/cosign verify-blob \
+                          --key "${COSIGN_TEMP_DIR}/cosign.pub" \
+                          --bundle reports/cosign/dummy-upi-app-image.sigstore.json \
+                          reports/cosign/dummy-upi-app-image.tar \
+                          > reports/cosign/cosign-verify-raw-output.txt 2>&1
+                        VERIFY_EXIT_CODE=$?
+                        set -e
+
+                        cat reports/cosign/cosign-verify-raw-output.txt
+
+                        if [ "${VERIFY_EXIT_CODE}" -eq 0 ]; then
+                          {
+                            echo "Cosign Signature Verification: PASSED"
+                            echo "Artifact: dummy-upi-app:latest"
+                            echo "Signed Artifact Type: Docker image archive"
+                            echo "Bundle: reports/cosign/dummy-upi-app-image.sigstore.json"
+                            echo "Checksum: reports/cosign/dummy-upi-app-image.sha256"
+                            echo "Public Key Credential: cosign-public-key"
+                            echo "Result: Verified OK"
+                          } > reports/cosign/dummy-upi-app-signature-verification.txt
+                        else
+                          {
+                            echo "Cosign Signature Verification: FAILED"
+                            echo "Exit Code: ${VERIFY_EXIT_CODE}"
+                            echo "Raw Output:"
+                            cat reports/cosign/cosign-verify-raw-output.txt
+                          } > reports/cosign/dummy-upi-app-signature-verification.txt
+
+                          exit "${VERIFY_EXIT_CODE}"
+                        fi
+
+                        test -s reports/cosign/dummy-upi-app-signature-verification.txt
+
+                        # Do not keep the large image tar in Jenkins artifacts.
+                        # The checksum, Sigstore bundle, and verification proof are enough as evidence.
+                        rm -f reports/cosign/dummy-upi-app-image.tar
+
+                        ls -lh reports/cosign/
+
+                        echo "Cosign image artifact signing and verification completed successfully."
+                    '''
+                }
+            }
+        }
+
         stage('DAST: OWASP ZAP Dynamic Scan') {
             steps {
                 echo 'Spinning up application for dynamic security testing...'
@@ -335,18 +440,21 @@ pipeline {
                 docker rm -f "${APP_CONTAINER}" "${ZAP_CONTAINER}" 2>/dev/null || true
                 docker network rm "${DAST_NETWORK}" 2>/dev/null || true
                 docker volume rm "${ZAP_VOLUME}" 2>/dev/null || true
+
+                # Remove large temporary image archive if it exists
+                rm -f reports/cosign/dummy-upi-app-image.tar 2>/dev/null || true
             '''
 
-            // Save generated security reports, SBOM reports, and DefectDojo upload responses as Jenkins build artifacts
-            archiveArtifacts artifacts: 'reports/**/*.json,reports/**/*.xml,reports/**/*.html', fingerprint: true, allowEmptyArchive: true
+            // Save generated security reports, SBOM reports, Cosign evidence, and DefectDojo upload responses as Jenkins build artifacts
+            archiveArtifacts artifacts: 'reports/**/*.json,reports/**/*.xml,reports/**/*.html,reports/**/*.txt,reports/**/*.sha256', fingerprint: true, allowEmptyArchive: true
         }
 
         success {
-            echo 'Pipeline completed successfully. Security reports and SBOM artifacts uploaded/archived.'
+            echo 'Pipeline completed successfully. Security reports, SBOM artifacts, and Cosign evidence uploaded/archived.'
         }
 
         failure {
-            echo 'Pipeline failed. Check Jenkins logs, security gates, SBOM generation, and DefectDojo upload responses.'
+            echo 'Pipeline failed. Check Jenkins logs, security gates, SBOM generation, Cosign verification, and DefectDojo upload responses.'
         }
     }
 }
