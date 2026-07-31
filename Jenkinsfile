@@ -126,6 +126,41 @@ pipeline {
             }
         }
 
+        stage('Generate SBOM Reports with Syft') {
+            steps {
+                echo 'Generating CycloneDX and SPDX SBOM reports using Syft...'
+
+                // Syft generates a Software Bill of Materials for the built Docker image.
+                // CycloneDX and SPDX formats are generated for supply chain visibility and audit evidence.
+                // Output is redirected by Jenkins shell into the workspace to avoid Docker bind-mount permission issues.
+                sh '''
+                    mkdir -p reports/sbom
+
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      anchore/syft:latest \
+                      dummy-upi-app:latest \
+                      -o cyclonedx-json > reports/sbom/dummy-upi-app-cyclonedx.json
+
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      anchore/syft:latest \
+                      dummy-upi-app:latest \
+                      -o spdx-json > reports/sbom/dummy-upi-app-spdx.json
+
+                    test -s reports/sbom/dummy-upi-app-cyclonedx.json
+                    test -s reports/sbom/dummy-upi-app-spdx.json
+
+                    grep -q '"bomFormat"[[:space:]]*:[[:space:]]*"CycloneDX"' reports/sbom/dummy-upi-app-cyclonedx.json
+                    grep -q '"spdxVersion"[[:space:]]*:' reports/sbom/dummy-upi-app-spdx.json
+
+                    ls -lh reports/sbom/
+
+                    echo "SBOM generation completed successfully."
+                '''
+            }
+        }
+
         stage('DAST: OWASP ZAP Dynamic Scan') {
             steps {
                 echo 'Spinning up application for dynamic security testing...'
@@ -302,16 +337,16 @@ pipeline {
                 docker volume rm "${ZAP_VOLUME}" 2>/dev/null || true
             '''
 
-            // Save generated reports and DefectDojo upload responses as Jenkins build artifacts
+            // Save generated security reports, SBOM reports, and DefectDojo upload responses as Jenkins build artifacts
             archiveArtifacts artifacts: 'reports/**/*.json,reports/**/*.xml,reports/**/*.html', fingerprint: true, allowEmptyArchive: true
         }
 
         success {
-            echo 'Pipeline completed successfully. Security reports uploaded to DefectDojo.'
+            echo 'Pipeline completed successfully. Security reports and SBOM artifacts uploaded/archived.'
         }
 
         failure {
-            echo 'Pipeline failed. Check Jenkins logs, security gates, and DefectDojo upload responses.'
+            echo 'Pipeline failed. Check Jenkins logs, security gates, SBOM generation, and DefectDojo upload responses.'
         }
     }
 }
