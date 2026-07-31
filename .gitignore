@@ -13,3 +13,4 @@ screenshots/*
 !.env.example
 
 zap-report.html
+.cosign/
