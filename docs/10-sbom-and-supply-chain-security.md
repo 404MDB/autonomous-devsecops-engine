@@ -585,33 +585,3 @@ Benefits:
 * Archives checksum, signature bundle, and verification evidence in Jenkins
 * Supports future registry-based image signing with Harbor
 * Strengthens Secure Software Development Lifecycle controls
-
----
-
-## Current Status
-
-Phase 7 SBOM and supply chain security is completed.
-
-Current result:
-
-```text
-Target Image: dummy-upi-app:latest
-CycloneDX SBOM: Completed
-CycloneDX Spec Version: 1.7
-CycloneDX Component Count: 3911
-SPDX SBOM: Completed
-SPDX Version: SPDX-2.3
-SPDX Package Count: 507
-Jenkins SBOM Automation: Completed
-Cosign Key Pair Generation: Completed
-Cosign Local Signing: Completed
-Cosign Local Verification: Completed
-Jenkins Cosign Credentials: Completed
-Jenkins Cosign Signing: Completed
-Jenkins Cosign Verification: Completed
-Cosign Signature Verification: PASSED
-Result: Verified OK
-Final Trivy CRITICAL Gate: Working as expected
-```
-
-The final Jenkins build may fail at the Trivy CRITICAL gate because CRITICAL vulnerabilities are present in the target image. This is expected security behavior and confirms that the pipeline is blocking unsafe builds correctly.
