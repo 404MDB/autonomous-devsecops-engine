@@ -238,25 +238,5 @@ Benefits:
 * Proves that Jenkins can enforce pipeline abortion when required.
 * Supports both academic demonstration and production-grade enforcement design.
 * Strengthens the Secure Software Development Lifecycle.
-
----
-
-## Current Status
-
-Phase 4 — Software Composition Analysis and Quality Gate Enforcement: COMPLETE
-
-Current implementation status:
-
-* Trivy SCA and container scanning are implemented.
-* CRITICAL vulnerability blocking is enabled through Trivy.
-* SonarQube Quality Gate integration is implemented.
-* Quality Gate is temporarily configured as non-blocking using `abortPipeline: false`.
-* Quality Gate can be restored to blocking mode by changing `abortPipeline` back to `true`.
-
-Production hardening action:
-
-Before presenting this as a production pipeline, restore:
-
-```groovy id="acb023"
 waitForQualityGate abortPipeline: true
-```
+``
