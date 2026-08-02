@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: dummy-upi-app-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+    app.kubernetes.io/name: dummy-upi-app
+    app.kubernetes.io/part-of: autonomous-devsecops-engine
+    app.kubernetes.io/component: alerting
+spec:
+  groups:
+    - name: dummy-upi-app.rules
+      rules:
+        - alert: DummyUPIAppDown
+          expr: up{namespace="devsecops",job="dummy-upi-service"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            service: dummy-upi-app
+          annotations:
+            summary: "Dummy UPI application target is down"
+            description: "Prometheus is unable to scrape the dummy UPI application pod for more than 1 minute."
+
+        - alert: DummyUPIHighHttp5xxErrors
+          expr: sum(rate(dummy_upi_http_requests_total{namespace="devsecops",status_code=~"5.."}[2m])) > 0
+          for: 1m
+          labels:
+            severity: warning
+            service: dummy-upi-app
+          annotations:
+            summary: "Dummy UPI application is returning HTTP 5xx errors"
+            description: "The dummy UPI application has returned one or more HTTP 5xx responses in the last 2 minutes."
