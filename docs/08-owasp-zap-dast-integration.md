@@ -273,20 +273,3 @@ Benefits:
 * Runs in an isolated temporary Docker environment.
 * Cleans up all temporary resources after execution.
 * Adds DAST coverage to the Secure Software Development Lifecycle.
-
----
-
-## Current Status
-
-Phase 5 — OWASP ZAP DAST Integration: COMPLETE
-
-The OWASP ZAP DAST stage is implemented, verified, and successfully executed in Jenkins.
-
-Current result:
-
-```text
-ZAP FAIL-NEW: 0
-ZAP WARN-NEW: 4
-ZAP PASS: 63
-Pipeline Status: SUCCESS
-```
