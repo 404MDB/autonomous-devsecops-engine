@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dummy-upi-app
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: dummy-upi-app
+    app.kubernetes.io/part-of: autonomous-devsecops-engine
+    app.kubernetes.io/component: gitops
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/404MDB/autonomous-devsecops-engine.git
+    targetRevision: main
+    path: k8s/base
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devsecops
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
