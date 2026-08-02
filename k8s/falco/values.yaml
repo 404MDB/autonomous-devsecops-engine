@@ -1,0 +1,12 @@
+tty: true
+
+falco:
+  jsonOutput: false
+  priority: debug
+
+falcoctl:
+  artifact:
+    install:
+      enabled: true
+    follow:
+      enabled: true
