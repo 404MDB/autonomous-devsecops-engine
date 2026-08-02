@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: dummy-upi-app
-          image: dummy-upi-app:k8s-health-v1
+          image: dummy-upi-app:metrics-v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000

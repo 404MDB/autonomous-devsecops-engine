@@ -1,0 +1,28 @@
+grafana:
+  enabled: true
+  service:
+    type: ClusterIP
+  adminUser: admin
+  defaultDashboardsEnabled: true
+
+prometheus:
+  enabled: true
+  service:
+    type: ClusterIP
+  prometheusSpec:
+    retention: 2d
+    retentionSize: 1GB
+
+alertmanager:
+  enabled: true
+  service:
+    type: ClusterIP
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+prometheusOperator:
+  enabled: true

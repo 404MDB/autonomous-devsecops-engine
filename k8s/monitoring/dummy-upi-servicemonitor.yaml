@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dummy-upi-app
+  namespace: monitoring
+  labels:
+    release: monitoring
+    app.kubernetes.io/name: dummy-upi-app
+    app.kubernetes.io/part-of: autonomous-devsecops-engine
+    app.kubernetes.io/component: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - devsecops
+  selector:
+    matchLabels:
+      app: dummy-upi-app
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

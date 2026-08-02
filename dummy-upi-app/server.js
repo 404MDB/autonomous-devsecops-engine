@@ -3,9 +3,36 @@ const helmet = require('helmet'); // FIXED SECURITY FLAW 6: Helmet added for HTT
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const sqlite3 = require('sqlite3').verbose();
+const promClient = require('prom-client');
 
 const app = express();
 const port = 3000;
+
+const register = new promClient.Registry();
+
+promClient.collectDefaultMetrics({
+  register,
+});
+
+const httpRequestCounter = new promClient.Counter({
+  name: 'dummy_upi_http_requests_total',
+  help: 'Total HTTP requests handled by the dummy UPI application',
+  labelNames: ['method', 'route', 'status_code'],
+});
+
+register.registerMetric(httpRequestCounter);
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.route && req.route.path ? req.route.path : req.path,
+      status_code: String(res.statusCode),
+    });
+  });
+
+  next();
+});
 
 app.use(helmet()); // Activate the security shields!
 
@@ -40,6 +67,12 @@ app.get('/health', (req, res) => {
     service: 'dummy-upi-app',
     message: 'UPI Mock Gateway health check passed'
   });
+});
+
+// Endpoint 1.2: Prometheus Metrics Endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
 });
 
 // Endpoint 2: Secure Login
