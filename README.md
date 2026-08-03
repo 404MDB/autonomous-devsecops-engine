@@ -1,47 +1,91 @@
 # Autonomous AI-Driven DevSecOps Engine
 
+## Secure SSDLC and Cloud Self-Healing Platform
+
 ## Project Overview
 
-The **Autonomous AI-Driven DevSecOps Engine** is an end-to-end Secure SSDLC and cloud self-healing platform built to demonstrate automated security controls across the complete software delivery lifecycle.
+The **Autonomous AI-Driven DevSecOps Engine** is an end-to-end Secure Software Development Lifecycle platform built to demonstrate automated security, vulnerability management, AI-assisted security intelligence, Kubernetes GitOps deployment, runtime threat detection, and autonomous self-healing response.
 
-The project integrates CI/CD automation, secrets detection, static code analysis, vulnerability scanning, dynamic application security testing, vulnerability management, SBOM generation, image signing, security gate enforcement, and AI-assisted security analysis.
+The project secures a sample dummy UPI application across the complete delivery lifecycle using CI/CD security gates, security scanning tools, vulnerability reporting, SBOM generation, image signing, Kubernetes deployment, monitoring, runtime security detection, and automated remediation.
 
-The next major phase adds an **AI Security Intelligence Layer** to analyze scan reports, summarize vulnerabilities, prioritize risks, recommend remediation, and support secure release decisions.
+This project demonstrates how modern DevSecOps can move from simple CI/CD scanning to a complete security automation platform.
 
 ---
 
 ## Objective
 
-To build an automated DevSecOps platform capable of:
+The objective of this project is to build a practical DevSecOps platform capable of:
 
-* Continuous Integration and Delivery
-* Secret scanning
-* Static Application Security Testing
-* Dependency and container vulnerability scanning
-* Dynamic Application Security Testing
-* Centralized vulnerability management
-* SBOM generation
-* Image artifact signing and verification
-* Security gate enforcement
-* AI-assisted security analysis
-* Risk prioritization and remediation guidance
-* Future autonomous remediation and self-healing
+* Automating CI/CD security workflows
+* Detecting leaked secrets
+* Performing static application security testing
+* Scanning dependencies and container images
+* Running dynamic application security testing
+* Centralizing vulnerabilities in DefectDojo
+* Generating SBOMs
+* Signing and verifying container image artifacts
+* Applying security gates
+* Performing AI-assisted risk analysis
+* Deploying applications to Kubernetes
+* Managing Kubernetes delivery using GitOps
+* Monitoring workloads using Prometheus and Grafana
+* Detecting runtime threats using Falco
+* Sending email alerts for runtime security events
+* Performing safe autonomous self-healing actions
 
 ---
 
-## Current Status
+## Final Project Status
 
 ```text
-Current Completed Phase: Phase 7
-Completed Area: SBOM and Supply Chain Security
-Current Result: Jenkins SBOM generation and Cosign verification completed
-Latest Jenkins Result: Expected failure at Trivy CRITICAL gate
-Next Phase: AI Security Intelligence Layer
+Project Status: Completed
+
+Latest Completed Capability:
+Autonomous Self-Healing and Email Notification
+
+Final Outcome:
+Falco detected suspicious runtime behavior, the self-healing engine analyzed the event, generated a risk decision, sent an email alert, and safely deleted only the demo-labeled suspicious pod.
 ```
 
-The latest Jenkins pipeline may fail at the final Trivy CRITICAL vulnerability gate because CRITICAL vulnerabilities are intentionally blocked by the pipeline.
+---
 
-This confirms that the security gate is working as expected.
+## Complete DevSecOps Flow
+
+```text
+GitHub Repository
+↓
+Jenkins CI/CD Pipeline
+↓
+TruffleHog Secret Scanning
+↓
+SonarQube SAST Analysis
+↓
+Trivy Filesystem and Container Scanning
+↓
+OWASP ZAP DAST
+↓
+DefectDojo Vulnerability Management
+↓
+Syft SBOM Generation
+↓
+Cosign Image Signing and Verification
+↓
+AI Security Intelligence Engine
+↓
+Kubernetes Deployment
+↓
+Argo CD GitOps Sync and Self-Healing
+↓
+Prometheus, Grafana, and Alertmanager Monitoring
+↓
+Falco Runtime Security Detection
+↓
+Autonomous Self-Healing Engine
+↓
+Email Security Alert
+↓
+Audit-Ready Evidence Reports
+```
 
 ---
 
@@ -50,12 +94,18 @@ This confirms that the security gate is working as expected.
 | Phase | Area | Tool / Technology | Status |
 |---|---|---|---|
 | Phase 1 | Environment Setup | WSL2, Ubuntu 24.04, Docker Desktop, VS Code Remote WSL | Completed |
-| Phase 2 | CI/CD Foundation | Jenkins, GitHub, Docker Outside of Docker | Completed |
-| Phase 3 | Secrets Detection and SAST | TruffleHog, SonarQube | Completed |
-| Phase 4 | Vulnerability Scanning and Security Gates | Trivy, SonarQube Quality Gate | Completed |
-| Phase 5 | Dynamic Application Security Testing | OWASP ZAP | Completed |
-| Phase 6 | Vulnerability Management | DefectDojo | Completed |
+| Phase 2 | CI/CD Foundation | Jenkins, GitHub, Docker | Completed |
+| Phase 3 | SonarQube SAST Integration | SonarQube, SonarScanner | Completed |
+| Phase 4 | Trivy SCA and Container Security Gate | Trivy | Completed |
+| Phase 5 | OWASP ZAP DAST Integration | OWASP ZAP | Completed |
+| Phase 6 | DefectDojo Vulnerability Management | DefectDojo | Completed |
 | Phase 7 | SBOM and Supply Chain Security | Syft, Cosign | Completed |
+| Phase 8 | AI Security Intelligence Layer | Python, Report Parser | Completed |
+| Phase 9 | Kubernetes Deployment | kind, Kubernetes, kubectl | Completed |
+| Phase 10 | GitOps with Argo CD | Argo CD, GitHub, Kustomize | Completed |
+| Phase 11 | Monitoring and Observability | Prometheus, Grafana, Alertmanager | Completed |
+| Phase 12 | Runtime Security | Falco | Completed |
+| Phase 13 | Autonomous Self-Healing and Email Notification | Python, Falco, kubectl, SMTP | Completed |
 
 ---
 
@@ -66,11 +116,11 @@ This confirms that the security gate is working as expected.
 * Docker Desktop with WSL integration
 * Git and GitHub repository setup
 * Jenkins CI/CD pipeline
-* Docker socket integration with Jenkins
-* TruffleHog secrets scanning
+* Docker integration with Jenkins
+* TruffleHog secret scanning
 * SonarQube static code analysis
 * SonarQube Quality Gate integration
-* Trivy JSON vulnerability reporting
+* Trivy vulnerability scanning
 * Trivy CRITICAL vulnerability gate
 * OWASP ZAP dynamic application security testing
 * DefectDojo vulnerability management
@@ -78,50 +128,27 @@ This confirms that the security gate is working as expected.
 * Automated ZAP report upload to DefectDojo
 * Syft CycloneDX SBOM generation
 * Syft SPDX SBOM generation
-* Cosign image artifact signing
+* Cosign image signing
 * Cosign signature verification
-* Jenkins security artifact archival
-* Docker cleanup after pipeline execution
+* AI Security Intelligence report parser
+* AI-based release decision generation
+* Kubernetes deployment using kind
+* Argo CD GitOps synchronization
+* Argo CD self-healing validation
+* Prometheus monitoring
+* Grafana dashboard access
+* Alertmanager readiness
+* Application `/metrics` endpoint
+* Prometheus ServiceMonitor
+* PrometheusRule alerting
+* Falco runtime threat detection
+* Autonomous self-healing engine
+* Email alert notification
+* Markdown and JSON evidence reports
 
 ---
 
-## Current CI/CD Security Pipeline
-
-```text
-GitHub Repository
-↓
-Jenkins SCM Checkout
-↓
-DevSecOps Environment Check
-↓
-TruffleHog Secrets Scan
-↓
-SonarQube SAST Analysis
-↓
-SonarQube Quality Gate Check
-↓
-Docker Image Build
-↓
-Trivy JSON Vulnerability Report
-↓
-Syft SBOM Generation
-↓
-Cosign Image Artifact Signing and Verification
-↓
-OWASP ZAP DAST Scan
-↓
-Upload Trivy Report to DefectDojo
-↓
-Upload ZAP Report to DefectDojo
-↓
-Trivy CRITICAL Vulnerability Gate
-↓
-Jenkins Artifact Archival and Cleanup
-```
-
----
-
-## Current Toolchain
+## Toolchain
 
 | Category | Tool |
 |---|---|
@@ -134,114 +161,279 @@ Jenkins Artifact Archival and Cleanup
 | DAST | OWASP ZAP |
 | Vulnerability Management | DefectDojo |
 | SBOM Generation | Syft |
-| Image Signing and Verification | Cosign |
+| Image Signing | Cosign |
+| AI Security Analysis | Python Security Intelligence Engine |
+| Kubernetes | kind, kubectl |
+| GitOps | Argo CD |
+| Monitoring | Prometheus, Grafana, Alertmanager |
+| Runtime Security | Falco |
+| Self-Healing | Python Automation Engine |
+| Notification | SMTP Email Alert |
 
 ---
 
-## DefectDojo Integration Status
-
-DefectDojo is configured as the centralized vulnerability management platform.
-
-Completed DefectDojo work:
+## Jenkins CI/CD Security Pipeline
 
 ```text
-DefectDojo deployed locally
-Academic Capstone organization created
-Autonomous AI-Driven DevSecOps Engine asset created
-CI/CD engagement created
-Manual Trivy report import completed
-Manual ZAP report import completed
-Jenkins automated Trivy report upload completed
-Jenkins automated ZAP report upload completed
+Checkout Code
+↓
+DevSecOps Environment Check
+↓
+TruffleHog Secrets Scan
+↓
+SonarQube Code Analysis
+↓
+SonarQube Quality Gate Check
+↓
+Docker Image Build
+↓
+Trivy JSON Vulnerability Report
+↓
+Syft SBOM Generation
+↓
+Cosign Image Signing and Verification
+↓
+OWASP ZAP DAST Scan
+↓
+Upload Trivy Report to DefectDojo
+↓
+Upload ZAP Report to DefectDojo
+↓
+AI Security Intelligence Analysis
+↓
+Trivy CRITICAL Vulnerability Gate
+↓
+Archive Reports and Evidence
 ```
 
-DefectDojo is used for:
+---
+
+## AI Security Intelligence Layer
+
+The AI Security Intelligence layer analyzes security reports generated by the pipeline.
+
+It processes:
+
+```text
+Trivy JSON report
+OWASP ZAP XML report
+CycloneDX SBOM report
+Cosign verification report
+```
+
+It generates:
+
+```text
+ai-security-summary.json
+ai-security-report.md
+release-decision.txt
+```
+
+Verified release decision:
+
+```text
+Risk Level: CRITICAL
+Release Decision: BLOCK_RELEASE
+Reason: Critical vulnerabilities are present in the container image.
+```
+
+---
+
+## DefectDojo Vulnerability Management
+
+DefectDojo is used as the centralized vulnerability management platform.
+
+It provides:
 
 * Centralized vulnerability tracking
-* Security finding deduplication
 * Severity-based prioritization
+* Security finding deduplication
 * Remediation tracking
-* Audit-ready evidence collection
+* Audit-ready evidence
+* Jenkins-based automated report upload
+
+Completed DefectDojo integrations:
+
+```text
+Manual Trivy import
+Manual OWASP ZAP import
+Automated Jenkins Trivy upload
+Automated Jenkins ZAP upload
+```
 
 ---
 
-## Latest SBOM Evidence
+## SBOM and Image Signing
 
-Syft generated two SBOM reports for the Docker image.
+The project generates SBOMs using Syft.
 
-Generated SBOM files:
-
-```text
-reports/sbom/dummy-upi-app-cyclonedx.json
-reports/sbom/dummy-upi-app-spdx.json
-```
-
-Verified Jenkins result:
+Generated formats:
 
 ```text
-dummy-upi-app-cyclonedx.json   1.7M
-dummy-upi-app-spdx.json        3.3M
+CycloneDX JSON
+SPDX JSON
 ```
 
-SBOM formats generated:
-
-| SBOM Format | Purpose | Status |
-|---|---|---|
-| CycloneDX | Component inventory and security workflows | Generated |
-| SPDX | Package and license metadata | Generated |
-
----
-
-## Latest Cosign Evidence
-
-Cosign image artifact signing and verification was completed successfully.
-
-Generated Cosign evidence files:
-
-```text
-reports/cosign/cosign-verify-raw-output.txt
-reports/cosign/dummy-upi-app-image.sha256
-reports/cosign/dummy-upi-app-image.sigstore.json
-reports/cosign/dummy-upi-app-signature-verification.txt
-```
+Cosign is used for image artifact signing and verification.
 
 Verified result:
 
 ```text
 Cosign Signature Verification: PASSED
 Artifact: dummy-upi-app:latest
-Signed Artifact Type: Docker image archive
-Bundle: reports/cosign/dummy-upi-app-image.sigstore.json
-Checksum: reports/cosign/dummy-upi-app-image.sha256
-Public Key Credential: cosign-public-key
 Result: Verified OK
 ```
 
 ---
 
-## Latest Trivy Gate Result
+## Kubernetes and GitOps
 
-Trivy container scanning is configured as the final security gate.
+The application is deployed to Kubernetes using a local kind cluster.
 
-Current enforcement:
-
-```bash
---exit-code 1 --severity CRITICAL
-```
-
-Latest final gate result:
+Kubernetes resources:
 
 ```text
-dummy-upi-app:latest (debian 12.13)
-Total: 7 (CRITICAL: 7)
-
-Node.js (node-pkg)
-Total: 2 (CRITICAL: 2)
-
-Finished: FAILURE
+Namespace: devsecops
+Deployment: dummy-upi-app
+Service: dummy-upi-service
+Replicas: 2
 ```
 
-This is expected behavior because the pipeline blocks unsafe images when CRITICAL vulnerabilities are detected.
+Argo CD is used for GitOps deployment.
+
+Verified Argo CD status:
+
+```text
+Application: dummy-upi-app
+Sync Status: Synced
+Health Status: Healthy
+Self-Heal: Enabled
+Prune: Enabled
+```
+
+Argo CD self-healing was validated by manually changing the replica count. Argo CD restored the deployment back to the Git-defined state.
+
+---
+
+## Monitoring and Observability
+
+The monitoring stack was deployed using kube-prometheus-stack.
+
+Installed components:
+
+```text
+Prometheus
+Grafana
+Alertmanager
+Prometheus Operator
+kube-state-metrics
+node-exporter
+```
+
+The dummy UPI application exposes metrics at:
+
+```text
+/metrics
+```
+
+Custom metric:
+
+```text
+dummy_upi_http_requests_total
+```
+
+Prometheus verified scrape result:
+
+```text
+up{namespace="devsecops",job="dummy-upi-service"} = 1
+```
+
+Application alert rules were added using PrometheusRule:
+
+```text
+DummyUPIAppDown
+DummyUPIHighHttp5xxErrors
+```
+
+---
+
+## Runtime Security with Falco
+
+Falco was deployed as a Kubernetes DaemonSet.
+
+Verified Falco status:
+
+```text
+Falco pod: 2/2 Running
+DaemonSet: 1/1 Ready
+Event source: syscall
+Runtime engine: modern BPF probe
+```
+
+Falco detected suspicious runtime activity:
+
+```text
+Warning Sensitive file opened for reading by non-trusted program
+file=/etc/shadow
+process=cat
+container_name=falco-test
+k8s_pod_name=falco-test
+k8s_ns_name=devsecops
+```
+
+This proves runtime threat detection is working inside the Kubernetes cluster.
+
+---
+
+## Autonomous Self-Healing and Email Notification
+
+The self-healing engine reads Falco runtime security events and generates automated remediation decisions.
+
+Self-healing workflow:
+
+```text
+Falco detects suspicious runtime activity
+↓
+Self-healing engine parses the Falco event
+↓
+Engine extracts pod, namespace, container, process, file, and severity
+↓
+Engine classifies risk
+↓
+Engine generates an email alert
+↓
+Engine checks safety controls
+↓
+Dry-run mode shows proposed action
+↓
+Execute mode deletes only demo-labeled suspicious pods
+```
+
+Safety controls:
+
+```text
+Allowed namespace: devsecops
+Required safety label: self-heal-demo=true
+Default mode: dry-run
+Execute mode must be explicitly enabled
+```
+
+Verified self-healing result:
+
+```text
+Events analyzed: 1
+High-risk events: 1
+Mode: execute
+Suspicious pod: falco-selfheal-test
+Result: Pod deleted successfully
+```
+
+Verified email alert result:
+
+```text
+Email sent: True
+Email status: Email alert sent successfully.
+```
 
 ---
 
@@ -252,6 +444,10 @@ autonomous-devsecops-engine/
 ├── .gitignore
 ├── Jenkinsfile
 ├── README.md
+├── ai-security-engine/
+│   ├── input/
+│   ├── output/
+│   └── src/
 ├── docker/
 │   └── jenkins/
 ├── docs/
@@ -265,24 +461,37 @@ autonomous-devsecops-engine/
 │   ├── 08-owasp-zap-dast-integration.md
 │   ├── 09-defectdojo-vulnerability-management.md
 │   ├── 10-sbom-and-supply-chain-security.md
+│   ├── 11-ai-security-intelligence-layer.md
+│   ├── 12-kubernetes-deployment.md
+│   ├── 13-gitops-argocd.md
+│   ├── 14-monitoring-observability.md
+│   ├── 15-runtime-security-falco.md
+│   ├── 16-autonomous-self-healing.md
 │   └── project-status.md
 ├── dummy-upi-app/
-│   ├── .dockerignore
 │   ├── Dockerfile
 │   ├── package.json
 │   ├── package-lock.json
 │   └── server.js
+├── k8s/
+│   ├── argocd/
+│   ├── base/
+│   ├── falco/
+│   └── monitoring/
 ├── reports/
 │   └── .gitkeep
-└── screenshots/
-    └── .gitkeep
+├── screenshots/
+│   └── .gitkeep
+└── self-healing-engine/
+    ├── .env.example
+    ├── input/
+    ├── output/
+    └── src/
 ```
 
 ---
 
 ## Documentation
-
-Phase-wise documentation is maintained inside the `docs/` directory.
 
 | Document | Description |
 |---|---|
@@ -295,69 +504,69 @@ Phase-wise documentation is maintained inside the `docs/` directory.
 | `docs/07-trivy-sca-integration.md` | Trivy SCA and container scanning |
 | `docs/08-owasp-zap-dast-integration.md` | OWASP ZAP DAST integration |
 | `docs/09-defectdojo-vulnerability-management.md` | DefectDojo vulnerability management |
-| `docs/10-sbom-and-supply-chain-security.md` | Syft SBOM and Cosign supply chain security |
+| `docs/10-sbom-and-supply-chain-security.md` | SBOM and Cosign supply chain security |
+| `docs/11-ai-security-intelligence-layer.md` | AI security intelligence |
+| `docs/12-kubernetes-deployment.md` | Kubernetes deployment |
+| `docs/13-gitops-argocd.md` | Argo CD GitOps |
+| `docs/14-monitoring-observability.md` | Prometheus, Grafana, and Alertmanager |
+| `docs/15-runtime-security-falco.md` | Falco runtime security |
+| `docs/16-autonomous-self-healing.md` | Autonomous self-healing and email notification |
 | `docs/project-status.md` | Overall project status |
 
 ---
 
-## In Progress
+## Security Gates
 
-The next phase is:
-
-```text
-Phase 8: AI Security Intelligence Layer
-```
-
-This phase will add AI-assisted security analysis by parsing scan reports and generating risk-based security summaries.
-
-Planned capabilities:
-
-* Parse Trivy JSON reports
-* Parse OWASP ZAP reports
-* Parse SBOM metadata
-* Summarize vulnerabilities
-* Prioritize risks
-* Recommend remediation
-* Generate release decision summaries
-* Prepare the foundation for autonomous security actions
-
----
-
-## Upcoming Roadmap
-
-| Phase | Area | Planned Tool |
+| Gate | Tool | Enforcement |
 |---|---|---|
-| Phase 8 | AI Security Intelligence | Python, Local AI, Report Parser |
-| Phase 9 | Kubernetes Deployment | Kubernetes |
-| Phase 10 | GitOps | Argo CD |
-| Phase 11 | Monitoring and Observability | Prometheus, Grafana, Alertmanager |
-| Phase 12 | Runtime Security | Falco |
-| Phase 13 | Autonomous Self-Healing | Automation Scripts, AI-assisted Recovery |
+| Secret Gate | TruffleHog | Blocks leaked secrets |
+| SAST Gate | SonarQube | Quality Gate validation |
+| Vulnerability Gate | Trivy | Blocks CRITICAL vulnerabilities |
+| DAST Evidence | OWASP ZAP | Generates runtime web security report |
+| Supply Chain Evidence | Syft, Cosign | SBOM and image verification |
+| AI Decision Gate | AI Security Engine | Generates release decision |
+| Runtime Detection | Falco | Detects suspicious workload behavior |
+| Self-Healing Safety Gate | Python Engine | Deletes only demo-labeled suspicious pods |
 
 ---
 
-## Final Project Vision
+## Important Security Notes
 
-The final version of this project will demonstrate a complete AI-driven DevSecOps lifecycle:
+* Real credentials are not committed to GitHub.
+* Runtime evidence files are stored locally.
+* Email credentials are stored only in `self-healing-engine/.env`.
+* `.env.example` is provided only as a safe template.
+* Generated reports under `reports/`, `ai-security-engine/output/`, and `self-healing-engine/output/` are ignored.
+* Self-healing delete action works only when the required demo label is present.
+
+---
+
+## Final Outcome
+
+This project demonstrates a complete AI-driven DevSecOps lifecycle:
 
 ```text
-Code Commit
+Secure CI/CD
 ↓
-Automated CI/CD Security Pipeline
+Security Scanning
 ↓
-Secrets, SAST, SCA, Container, DAST Scanning
+Vulnerability Management
 ↓
-SBOM Generation and Image Signing
+SBOM and Image Signing
 ↓
-Centralized Vulnerability Management
+AI Security Analysis
 ↓
-AI Risk Analysis and Remediation Recommendation
+Kubernetes Deployment
 ↓
-Kubernetes GitOps Deployment
+GitOps Delivery
 ↓
-Monitoring and Runtime Security
+Monitoring and Alerting
 ↓
-Autonomous Self-Healing Actions
+Runtime Threat Detection
+↓
+Autonomous Self-Healing
+↓
+Email Security Notification
 ```
 
-The final goal is to create an AI-driven DevSecOps platform that can automatically scan, manage, analyze, prioritize, and eventually help remediate security vulnerabilities across the software delivery lifecycle.
+The final platform proves how security can be automated across build-time, deploy-time, and runtime stages of the software delivery lifecycle.
