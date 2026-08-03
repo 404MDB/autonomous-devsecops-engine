@@ -497,8 +497,7 @@ autonomous-devsecops-engine/
 │   ├── 13-gitops-argocd.md
 │   ├── 14-monitoring-observability.md
 │   ├── 15-runtime-security-falco.md
-│   ├── 16-autonomous-self-healing.md
-│   └── project-status.md
+│   └── 16-autonomous-self-healing.md
 ├── dummy-upi-app/
 │   ├── Dockerfile
 │   ├── package.json
@@ -542,7 +541,6 @@ autonomous-devsecops-engine/
 | `docs/14-monitoring-observability.md` | Prometheus, Grafana, and Alertmanager |
 | `docs/15-runtime-security-falco.md` | Falco runtime security |
 | `docs/16-autonomous-self-healing.md` | Autonomous self-healing and email notification |
-| `docs/project-status.md` | Overall project status |
 
 ---
 
