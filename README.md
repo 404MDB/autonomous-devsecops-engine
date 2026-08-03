@@ -1,14 +1,14 @@
 # Autonomous AI-Driven DevSecOps Engine
 
-## Secure SSDLC and Cloud Self-Healing Platform
+## Secure SSDLC and Cloud-Native Self-Healing Platform
 
 ## Project Overview
 
-The **Autonomous AI-Driven DevSecOps Engine** is an end-to-end Secure Software Development Lifecycle platform built to demonstrate automated security, vulnerability management, AI-assisted security intelligence, Kubernetes GitOps deployment, runtime threat detection, and autonomous self-healing response.
+The **Autonomous AI-Driven DevSecOps Engine** is an end-to-end Secure Software Development Lifecycle platform built to demonstrate automated security, vulnerability management, AI-assisted security intelligence, Kubernetes GitOps deployment, runtime threat detection, and controlled autonomous self-healing response in a cloud-native environment.
 
-The project secures a sample dummy UPI application across the complete delivery lifecycle using CI/CD security gates, security scanning tools, vulnerability reporting, SBOM generation, image signing, Kubernetes deployment, monitoring, runtime security detection, and automated remediation.
+The project secures a sample dummy UPI application across the complete delivery lifecycle using CI/CD security gates, security scanning tools, vulnerability reporting, SBOM generation, image signing, Kubernetes deployment, monitoring, runtime security detection, email notification, and safe automated remediation.
 
-This project demonstrates how modern DevSecOps can move from simple CI/CD scanning to a complete security automation platform.
+This project demonstrates how modern DevSecOps can move from simple CI/CD scanning to a complete security automation platform covering build-time, deploy-time, and runtime security.
 
 ---
 
@@ -31,7 +31,7 @@ The objective of this project is to build a practical DevSecOps platform capable
 * Monitoring workloads using Prometheus and Grafana
 * Detecting runtime threats using Falco
 * Sending email alerts for runtime security events
-* Performing safe autonomous self-healing actions
+* Performing safe autonomous self-healing actions for controlled demo workloads
 
 ---
 
@@ -44,7 +44,7 @@ Latest Completed Capability:
 Autonomous Self-Healing and Email Notification
 
 Final Outcome:
-Falco detected suspicious runtime behavior, the self-healing engine analyzed the event, generated a risk decision, sent an email alert, and safely deleted only the demo-labeled suspicious pod.
+Falco detected suspicious runtime behavior, the self-healing engine analyzed the event, generated a risk decision, created evidence reports, sent an email alert, and safely deleted only the demo-labeled suspicious pod.
 ```
 
 ---
@@ -237,6 +237,8 @@ Release Decision: BLOCK_RELEASE
 Reason: Critical vulnerabilities are present in the container image.
 ```
 
+The AI Security Intelligence layer helps convert raw scanner output into risk-based security decisions that can be used by developers, security teams, and release reviewers.
+
 ---
 
 ## DefectDojo Vulnerability Management
@@ -284,6 +286,8 @@ Artifact: dummy-upi-app:latest
 Result: Verified OK
 ```
 
+This adds software supply chain visibility and helps verify that container artifacts are signed before being treated as trusted release evidence.
+
 ---
 
 ## Kubernetes and GitOps
@@ -312,6 +316,8 @@ Prune: Enabled
 ```
 
 Argo CD self-healing was validated by manually changing the replica count. Argo CD restored the deployment back to the Git-defined state.
+
+This demonstrates cloud-native GitOps behavior in a local Kubernetes environment.
 
 ---
 
@@ -387,7 +393,7 @@ This proves runtime threat detection is working inside the Kubernetes cluster.
 
 ## Autonomous Self-Healing and Email Notification
 
-The self-healing engine reads Falco runtime security events and generates automated remediation decisions.
+The self-healing engine reads Falco runtime security events and generates controlled automated remediation decisions.
 
 Self-healing workflow:
 
@@ -434,6 +440,31 @@ Verified email alert result:
 Email sent: True
 Email status: Email alert sent successfully.
 ```
+
+This confirms that the project supports controlled autonomous response for runtime security events while preventing unsafe blind remediation.
+
+---
+
+## Cloud-Native Scope
+
+This project is implemented in a local cloud-native lab environment.
+
+Current environment:
+
+```text
+WSL2 Ubuntu 24.04
+Docker Desktop
+kind Kubernetes cluster
+Local Jenkins
+Local SonarQube
+Local DefectDojo
+Local Prometheus and Grafana
+Local Falco deployment
+```
+
+The project is **cloud-native** because it uses containers, Kubernetes, GitOps, monitoring, runtime security, and self-healing automation.
+
+The project is **not described as a cloud-hosted platform** because it is not currently deployed on AWS EKS, Azure AKS, or Google GKE.
 
 ---
 
@@ -538,6 +569,7 @@ autonomous-devsecops-engine/
 * `.env.example` is provided only as a safe template.
 * Generated reports under `reports/`, `ai-security-engine/output/`, and `self-healing-engine/output/` are ignored.
 * Self-healing delete action works only when the required demo label is present.
+* The project demonstrates controlled self-healing in a local Kubernetes lab, not unrestricted production remediation.
 
 ---
 
@@ -564,9 +596,9 @@ Monitoring and Alerting
 ↓
 Runtime Threat Detection
 ↓
-Autonomous Self-Healing
+Controlled Autonomous Self-Healing
 ↓
 Email Security Notification
 ```
 
-The final platform proves how security can be automated across build-time, deploy-time, and runtime stages of the software delivery lifecycle.
+The final platform proves how security can be automated across build-time, deploy-time, and runtime stages of the software delivery lifecycle using cloud-native DevSecOps practices.
