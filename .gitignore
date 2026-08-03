@@ -20,3 +20,9 @@ ai-security-engine/input/*
 !ai-security-engine/input/.gitkeep
 ai-security-engine/output/*
 !ai-security-engine/output/.gitkeep
+
+# Self-healing engine generated inputs and outputs
+self-healing-engine/input/*
+!self-healing-engine/input/.gitkeep
+self-healing-engine/output/*
+!self-healing-engine/output/.gitkeep
