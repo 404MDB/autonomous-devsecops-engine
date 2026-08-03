@@ -26,3 +26,6 @@ self-healing-engine/input/*
 !self-healing-engine/input/.gitkeep
 self-healing-engine/output/*
 !self-healing-engine/output/.gitkeep
+
+# Self-healing email local secrets
+self-healing-engine/.env
