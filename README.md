@@ -89,6 +89,55 @@ Audit-Ready Evidence Reports
 
 ---
 
+## Final Architecture Diagram
+
+```mermaid
+flowchart TD
+
+    A[Developer Pushes Code] --> B[GitHub Repository]
+    B --> C[Jenkins CI/CD Pipeline]
+
+    C --> D[Security Scanning Stage]
+
+    D --> D1[TruffleHog Secret Scanning]
+    D --> D2[SonarQube SAST Analysis]
+    D --> D3[Trivy Vulnerability Scanning]
+    D --> D4[OWASP ZAP DAST Scan]
+
+    D1 --> E[Security Reports and Findings]
+    D2 --> E
+    D3 --> E
+    D4 --> E
+
+    E --> F[DefectDojo Vulnerability Management]
+
+    C --> G[Supply Chain Security]
+    G --> G1[Syft SBOM Generation]
+    G --> G2[Cosign Image Signing and Verification]
+
+    F --> H[AI Security Intelligence Engine]
+    G1 --> H
+    G2 --> H
+
+    H --> I[Risk Score, Security Summary and Release Decision]
+
+    I --> J[Kubernetes Deployment]
+    J --> K[Argo CD GitOps Sync and Desired State Self-Healing]
+
+    K --> L[Prometheus, Grafana and Alertmanager Monitoring]
+
+    J --> M[Falco Runtime Security Detection]
+    M --> N[Autonomous Self-Healing Engine]
+
+    N --> O[Dry-Run or Safe Execute Mode]
+    O --> P[Delete Only Demo-Labeled Suspicious Pod]
+
+    N --> Q[Email Security Alert]
+    N --> R[JSON and Markdown Evidence Reports]
+```
+
+---
+
 ## Completed Phases
 
 | Phase | Area | Tool / Technology | Status |
